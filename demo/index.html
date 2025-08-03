@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Rails Page Builder - Dynamic Static Page Generator for Ruby on Rails</title>
+    <meta name="description" content="Open-source dynamic static page generator for Ruby on Rails with real-time collaboration, multi-language support, and professional features.">
+    <meta name="keywords" content="Rails, Page Builder, Ruby on Rails, Visual Editor, Drag and Drop, Multi-language, RTL, Persian, Arabic">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Rails Page Builder - Dynamic Static Page Generator">
+    <meta property="og:description" content="Open-source dynamic static page generator with drag-and-drop editor. Supports 4 languages including RTL, real-time collaboration, and professional features.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://demo.railspagebuilder.com">
+    <meta property="og:image" content="https://demo.railspagebuilder.com/assets/og-image.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #ec4899;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            scroll-behavior: smooth;
+            transition: all 0.3s ease;
+        }
+        
+        /* RTL Styles */
+        [dir="rtl"] {
+            font-family: 'Vazirmatn', 'Inter', sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        [dir="rtl"] .nav {
+            flex-direction: row-reverse;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        [dir="rtl"] .nav-links {
+            flex-direction: row-reverse;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .cta-button {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .cta-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Language Switcher */
+        .language-switcher {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .language-switcher button {
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: none;
+            background: transparent;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .language-switcher button:hover,
+        .language-switcher button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        [dir="rtl"] .hero-buttons {
+            flex-direction: row-reverse;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--primary-color);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: var(--bg-light);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .section-title p {
+            font-size: 1.125rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        /* Stats Section */
+        .stats {
+            background: var(--primary-color);
+            color: white;
+            padding: 80px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+        
+        .stat-item h3 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-item p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+        }
+        
+        /* Demo Section */
+        .demo {
+            padding: 100px 0;
+            background: white;
+        }
+        
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        [dir="rtl"] .demo-container > div:first-child {
+            order: 2;
+        }
+        
+        [dir="rtl"] .demo-container > div:last-child {
+            order: 1;
+        }
+        
+        .demo-content h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+        
+        .demo-content p {
+            font-size: 1.125rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+        
+        .demo-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .demo-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+        
+        [dir="rtl"] .demo-features li {
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        
+        .demo-features li i {
+            color: var(--success-color);
+            font-size: 1.125rem;
+        }
+        
+        .demo-preview {
+            background: var(--bg-light);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(90deg, #ff5f56, #ffbd2e, #27ca3f);
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .demo-preview-content {
+            margin-top: 60px;
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            color: var(--text-light);
+            border: 2px dashed var(--border-color);
+            text-align: center;
+        }
+        
+        /* Language Support */
+        .languages {
+            padding: 100px 0;
+            background: var(--bg-light);
+        }
+        
+        .languages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .language-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .language-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .language-flag {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: var(--bg-light);
+        }
+        
+        /* Pricing */
+        .pricing {
+            padding: 100px 0;
+            background: white;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .pricing-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-card.featured {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+        
+        .pricing-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .pricing-card .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-card .price small {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+        
+        [dir="ltr"] .pricing-features {
+            text-align: left;
+        }
+        
+        [dir="rtl"] .pricing-features {
+            text-align: right;
+        }
+        
+        .pricing-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        [dir="rtl"] .pricing-features li {
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        
+        .pricing-features li i {
+            color: var(--success-color);
+        }
+        
+        .pricing-card.featured .pricing-features li i {
+            color: white;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            line-height: 1.6;
+        }
+        
+        .footer-section a:hover {
+            color: white;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .demo-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Hidden content for language switching */
+        .lang-content {
+            display: none;
+        }
+        
+        .lang-content.active {
+            display: block;
+        }
+        
+        .lang-content.active .lang-item {
+            display: block;
+        }
+        
+        .lang-item {
+            display: none;
+        }
+        
+        .lang-item.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="#" class="logo" id="logo-text">
+                <i class="fas fa-cube"></i> <span class="lang-item" data-lang="en">Rails Page Builder</span><span class="lang-item" data-lang="fa">ایجادکننده صفحات ریلز</span>
+            </a>
+            
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#features" class="lang-item" data-lang="en">Features</a><a href="#features" class="lang-item" data-lang="fa">ویژگی‌ها</a></li>
+                <li><a href="#demo" class="lang-item" data-lang="en">Demo</a><a href="#demo" class="lang-item" data-lang="fa">دمو</a></li>
+                <li><a href="#languages" class="lang-item" data-lang="en">Languages</a><a href="#languages" class="lang-item" data-lang="fa">زبان‌ها</a></li>
+                <li><a href="#support" class="lang-item" data-lang="en">Support</a><a href="#support" class="lang-item" data-lang="fa">حمایت</a></li>
+                <li><a href="#docs" class="lang-item" data-lang="en">Documentation</a><a href="#docs" class="lang-item" data-lang="fa">مستندات</a></li>
+            </ul>
+            
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="language-switcher">
+                    <button onclick="switchLanguage('en')" id="btn-en" class="active">EN</button>
+                    <button onclick="switchLanguage('fa')" id="btn-fa">فا</button>
+                </div>
+                <a href="#demo" class="cta-button" id="cta-demo">
+                    <span class="lang-item" data-lang="en">Try Demo</span>
+                    <span class="lang-item" data-lang="fa">آزمایش دمو</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content animate-fade-in">
+                <h1>
+                    <span class="lang-item" data-lang="en">Dynamic Static Page Generator for Ruby on Rails</span>
+                    <span class="lang-item" data-lang="fa">تولیدکننده صفحات استاتیک پویا برای Ruby on Rails</span>
+                </h1>
+                <p>
+                    <span class="lang-item" data-lang="en">Create stunning, professional pages with our open-source drag-and-drop editor. Features real-time collaboration, multi-language support including RTL, and professional-grade features.</span>
+                    <span class="lang-item" data-lang="fa">صفحات شگفت‌انگیز و حرفه‌ای را با ویرایشگر متن‌باز کشیدن و رها کردن ما بسازید. دارای همکاری همزمان، پشتیبانی چند زبانه شامل راست به چپ و ویژگی‌های حرفه‌ای.</span>
+                </p>
+                
+                <div class="hero-buttons">
+                    <a href="#demo" class="btn-primary">
+                        <i class="fas fa-play"></i> 
+                        <span class="lang-item" data-lang="en">Live Demo</span>
+                        <span class="lang-item" data-lang="fa">دمو زنده</span>
+                    </a>
+                    <a href="https://github.com/hadivarp/rails-page-builder" class="btn-secondary">
+                        <i class="fab fa-github"></i> 
+                        <span class="lang-item" data-lang="en">View on GitHub</span>
+                        <span class="lang-item" data-lang="fa">مشاهده در GitHub</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3><span class="lang-item" data-lang="en">30+</span><span class="lang-item" data-lang="fa">۳۰+</span></h3>
+                    <p><span class="lang-item" data-lang="en">Interactive Blocks</span><span class="lang-item" data-lang="fa">بلوک تعاملی</span></p>
+                </div>
+                <div class="stat-item">
+                    <h3><span class="lang-item" data-lang="en">4</span><span class="lang-item" data-lang="fa">۴</span></h3>
+                    <p><span class="lang-item" data-lang="en">Languages Supported</span><span class="lang-item" data-lang="fa">زبان پشتیبانی شده</span></p>
+                </div>
+                <div class="stat-item">
+                    <h3><span class="lang-item" data-lang="en">8</span><span class="lang-item" data-lang="fa">۸</span></h3>
+                    <p><span class="lang-item" data-lang="en">Professional Templates</span><span class="lang-item" data-lang="fa">قالب حرفه‌ای</span></p>
+                </div>
+                <div class="stat-item">
+                    <h3><span class="lang-item" data-lang="en">100%</span><span class="lang-item" data-lang="fa">۱۰۰%</span></h3>
+                    <p><span class="lang-item" data-lang="en">Open Source</span><span class="lang-item" data-lang="fa">منبع باز</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>
+                    <span class="lang-item" data-lang="en">Powerful Professional Features</span>
+                    <span class="lang-item" data-lang="fa">ویژگی‌های قدرتمند سازمانی</span>
+                </h2>
+                <p>
+                    <span class="lang-item" data-lang="en">Everything you need to build professional pages with advanced collaboration and modern features.</span>
+                    <span class="lang-item" data-lang="fa">همه چیزی که برای ساخت صفحات حرفه‌ای با ویژگی‌های پیشرفته همکاری و امنیت نیاز دارید.</span>
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">Real-time Collaboration</span>
+                        <span class="lang-item" data-lang="fa">همکاری همزمان</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">Multiple users can edit pages simultaneously with live cursor tracking, conflict resolution, and instant synchronization.</span>
+                        <span class="lang-item" data-lang="fa">چندین کاربر می‌توانند همزمان صفحات را ویرایش کنند با ردیابی مکان‌نمای زنده، حل تداخل و همگام‌سازی فوری.</span>
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">Multi-language & RTL Support</span>
+                        <span class="lang-item" data-lang="fa">پشتیبانی چند زبانه و راست به چپ</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">Built-in support for English, Persian, Arabic, and Hebrew with proper right-to-left text direction and formatting.</span>
+                        <span class="lang-item" data-lang="fa">پشتیبانی داخلی از انگلیسی، فارسی، عربی و عبری با جهت متن راست به چپ و قالب‌بندی مناسب.</span>
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">Professional Security</span>
+                        <span class="lang-item" data-lang="fa">امنیت سازمانی</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">Role-based permissions, content sanitization, rate limiting, CSRF protection, and comprehensive audit logging.</span>
+                        <span class="lang-item" data-lang="fa">مجوزهای مبتنی بر نقش، پاک‌سازی محتوا، محدودیت نرخ، حفاظت CSRF و ثبت جامع حسابرسی.</span>
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">High Performance</span>
+                        <span class="lang-item" data-lang="fa">عملکرد بالا</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">Multi-level caching, asset optimization, lazy loading, and performance monitoring for professional-scale applications.</span>
+                        <span class="lang-item" data-lang="fa">کش چند سطحی، بهینه‌سازی دارایی‌ها، بارگیری تنبل و نظارت بر عملکرد برای برنامه‌های در مقیاس سازمانی.</span>
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">Advanced Analytics</span>
+                        <span class="lang-item" data-lang="fa">تجزیه و تحلیل پیشرفته</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">Comprehensive tracking, real-time statistics, user behavior analysis, and automated insights generation.</span>
+                        <span class="lang-item" data-lang="fa">ردیابی جامع، آمار همزمان، تجزیه و تحلیل رفتار کاربر و تولید بینش خودکار.</span>
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cubes"></i>
+                    </div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">Rich Block Library</span>
+                        <span class="lang-item" data-lang="fa">کتابخانه غنی بلوک‌ها</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">30+ interactive blocks including accordions, carousels, modals, forms, and e-commerce components.</span>
+                        <span class="lang-item" data-lang="fa">۳۰+ بلوک تعاملی شامل آکاردئون، کاروسل، مودال، فرم و اجزای تجارت الکترونیک.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="demo">
+        <div class="container">
+            <div class="demo-container">
+                <div class="demo-content">
+                    <h2>
+                        <span class="lang-item" data-lang="en">Experience the Power</span>
+                        <span class="lang-item" data-lang="fa">قدرت را تجربه کنید</span>
+                    </h2>
+                    <p>
+                        <span class="lang-item" data-lang="en">Try our interactive demo to see how easy it is to create professional pages with advanced features like real-time collaboration and multi-language support.</span>
+                        <span class="lang-item" data-lang="fa">دمو تعاملی ما را امتحان کنید تا ببینید ساخت صفحات حرفه‌ای با ویژگی‌های پیشرفته مثل همکاری همزمان و پشتیبانی چند زبانه چقدر آسان است.</span>
+                    </p>
+                    
+                    <ul class="demo-features">
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">Drag-and-drop page building</span><span class="lang-item" data-lang="fa">ساخت صفحه با کشیدن و رها کردن</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">Live collaboration with multiple users</span><span class="lang-item" data-lang="fa">همکاری زنده با چندین کاربر</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">RTL language support</span><span class="lang-item" data-lang="fa">پشتیبانی از زبان‌های راست به چپ</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">Professional templates</span><span class="lang-item" data-lang="fa">قالب‌های حرفه‌ای</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">Real-time analytics</span><span class="lang-item" data-lang="fa">تجزیه و تحلیل همزمان</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">Enterprise security features</span><span class="lang-item" data-lang="fa">ویژگی‌های امنیت سازمانی</span></li>
+                    </ul>
+                    
+                    <a href="https://demo.railspagebuilder.com/demo" class="btn-primary">
+                        <i class="fas fa-external-link-alt"></i> 
+                        <span class="lang-item" data-lang="en">Launch Interactive Demo</span>
+                        <span class="lang-item" data-lang="fa">شروع دمو تعاملی</span>
+                    </a>
+                </div>
+                
+                <div class="demo-preview">
+                    <div class="demo-preview-content">
+                        <div style="text-align: center;">
+                            <i class="fas fa-play-circle" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                            <p>
+                                <span class="lang-item" data-lang="en">Click "Launch Interactive Demo" to try the full page builder experience</span>
+                                <span class="lang-item" data-lang="fa">روی "شروع دمو تعاملی" کلیک کنید تا تجربه کامل ایجادکننده صفحات را امتحان کنید</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Language Support -->
+    <section id="languages" class="languages">
+        <div class="container">
+            <div class="section-title">
+                <h2>
+                    <span class="lang-item" data-lang="en">Multi-Language Excellence</span>
+                    <span class="lang-item" data-lang="fa">تعالی چند زبانه</span>
+                </h2>
+                <p>
+                    <span class="lang-item" data-lang="en">Built-in support for multiple languages with proper RTL handling and cultural considerations.</span>
+                    <span class="lang-item" data-lang="fa">پشتیبانی داخلی از چندین زبان با مدیریت مناسب راست به چپ و در نظر گیری ملاحظات فرهنگی.</span>
+                </p>
+            </div>
+            
+            <div class="languages-grid">
+                <div class="language-card">
+                    <div class="language-flag">🇺🇸</div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">English</span>
+                        <span class="lang-item" data-lang="fa">انگلیسی</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">Full left-to-right support with comprehensive interface translations and localized content.</span>
+                        <span class="lang-item" data-lang="fa">پشتیبانی کامل چپ به راست با ترجمه جامع رابط کاربری و محتوای محلی‌سازی شده.</span>
+                    </p>
+                </div>
+                
+                <div class="language-card">
+                    <div class="language-flag">🇮🇷</div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">Persian (فارسی)</span>
+                        <span class="lang-item" data-lang="fa">فارسی</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">Complete RTL support with proper text direction, Persian numerals, and cultural formatting.</span>
+                        <span class="lang-item" data-lang="fa">پشتیبانی کامل راست به چپ با جهت متن مناسب، اعداد فارسی و قالب‌بندی فرهنگی.</span>
+                    </p>
+                </div>
+                
+                <div class="language-card">
+                    <div class="language-flag">🇸🇦</div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">Arabic (العربية)</span>
+                        <span class="lang-item" data-lang="fa">عربی</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">Native Arabic RTL support with proper text shaping, Arabic numerals, and regional variations.</span>
+                        <span class="lang-item" data-lang="fa">پشتیبانی بومی عربی راست به چپ با شکل‌گیری مناسب متن، اعداد عربی و تنوع‌های منطقه‌ای.</span>
+                    </p>
+                </div>
+                
+                <div class="language-card">
+                    <div class="language-flag">🇮🇱</div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">Hebrew (עברית)</span>
+                        <span class="lang-item" data-lang="fa">عبری</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">Full Hebrew RTL implementation with proper character handling and cultural considerations.</span>
+                        <span class="lang-item" data-lang="fa">پیاده‌سازی کامل عبری راست به چپ با مدیریت مناسب کاراکتر و ملاحظات فرهنگی.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Support & Donation -->
+    <section id="support" class="pricing">
+        <div class="container">
+            <div class="section-title">
+                <h2>
+                    <span class="lang-item" data-lang="en">Support the Project</span>
+                    <span class="lang-item" data-lang="fa">حمایت از پروژه</span>
+                </h2>
+                <p>
+                    <span class="lang-item" data-lang="en">Rails Page Builder is completely free and open-source under MIT license. Support development with a donation.</span>
+                    <span class="lang-item" data-lang="fa">ایجادکننده صفحات ریلز کاملاً رایگان و متن‌باز تحت مجوز MIT است. با کمک مالی از توسعه آن حمایت کنید.</span>
+                </p>
+            </div>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>
+                        <span class="lang-item" data-lang="en">Free & Open Source</span>
+                        <span class="lang-item" data-lang="fa">رایگان و متن‌باز</span>
+                    </h3>
+                    <div class="price">
+                        <span class="lang-item" data-lang="en">$0 <small>/forever</small></span>
+                        <span class="lang-item" data-lang="fa">۰$ <small>/همیشه</small></span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">All features included</span><span class="lang-item" data-lang="fa">تمام ویژگی‌ها شامل</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">30+ blocks library</span><span class="lang-item" data-lang="fa">کتابخانه ۳۰+ بلوک</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">Multi-language support</span><span class="lang-item" data-lang="fa">پشتیبانی چند زبانه</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">Real-time collaboration</span><span class="lang-item" data-lang="fa">همکاری همزمان</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">Advanced analytics</span><span class="lang-item" data-lang="fa">تجزیه و تحلیل پیشرفته</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">MIT License</span><span class="lang-item" data-lang="fa">مجوز MIT</span></li>
+                        <li><i class="fas fa-check"></i> <span class="lang-item" data-lang="en">Community support</span><span class="lang-item" data-lang="fa">پشتیبانی انجمن</span></li>
+                    </ul>
+                    <a href="https://github.com/hadivarp/rails-page-builder" class="cta-button" style="width: 100%; text-align: center;">
+                        <span class="lang-item" data-lang="en">Get Started</span>
+                        <span class="lang-item" data-lang="fa">شروع کنید</span>
+                    </a>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">
+                        <span class="lang-item" data-lang="en">Support Development</span>
+                        <span class="lang-item" data-lang="fa">حمایت از توسعه</span>
+                    </div>
+                    <h3>
+                        <span class="lang-item" data-lang="en">Donate with Crypto</span>
+                        <span class="lang-item" data-lang="fa">کمک مالی با رمزارز</span>
+                    </h3>
+                    <div class="price"><i class="fab fa-bitcoin"></i></div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-heart" style="color: #ec4899;"></i> <span class="lang-item" data-lang="en">Support open-source development</span><span class="lang-item" data-lang="fa">حمایت از توسعه متن‌باز</span></li>
+                        <li><i class="fas fa-heart" style="color: #ec4899;"></i> <span class="lang-item" data-lang="en">Help maintain the project</span><span class="lang-item" data-lang="fa">کمک به نگهداری پروژه</span></li>
+                        <li><i class="fas fa-heart" style="color: #ec4899;"></i> <span class="lang-item" data-lang="en">Fund new features</span><span class="lang-item" data-lang="fa">تامین مالی ویژگی‌های جدید</span></li>
+                    </ul>
+                    <div style="margin: 1rem 0; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; font-size: 0.875rem;">
+                        <strong><span class="lang-item" data-lang="en">Bitcoin (BTC):</span><span class="lang-item" data-lang="fa">بیت‌کوین (BTC):</span></strong><br>
+                        <code style="word-break: break-all; font-size: 0.75rem; direction: ltr;">bc1q9r3d8035styeamuze4vy3yxpqr2q4rgjmrr77l</code><br><br>
+                        <strong><span class="lang-item" data-lang="en">Ethereum (ETH):</span><span class="lang-item" data-lang="fa">اتریوم (ETH):</span></strong><br>
+                        <code style="word-break: break-all; font-size: 0.75rem; direction: ltr;">0xCBCC3f3F521685C10D6D68AaB0B25d2529A7A4bA</code>
+                    </div>
+                    <a href="#" onclick="copyToClipboard('bc1q9r3d8035styeamuze4vy3yxpqr2q4rgjmrr77l')" class="cta-button" style="width: 100%; text-align: center; background: white; color: var(--primary-color);">
+                        <span class="lang-item" data-lang="en">Copy BTC Address</span>
+                        <span class="lang-item" data-lang="fa">کپی آدرس BTC</span>
+                    </a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>
+                        <span class="lang-item" data-lang="en">Other Ways to Help</span>
+                        <span class="lang-item" data-lang="fa">راه‌های دیگر کمک</span>
+                    </h3>
+                    <div class="price"><i class="fas fa-hands-helping"></i></div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-star"></i> <span class="lang-item" data-lang="en">Star the project on GitHub</span><span class="lang-item" data-lang="fa">ستاره دادن در GitHub</span></li>
+                        <li><i class="fas fa-share"></i> <span class="lang-item" data-lang="en">Share with your network</span><span class="lang-item" data-lang="fa">اشتراک‌گذاری با شبکه</span></li>
+                        <li><i class="fas fa-code"></i> <span class="lang-item" data-lang="en">Contribute code or docs</span><span class="lang-item" data-lang="fa">مشارکت در کد یا مستندات</span></li>
+                        <li><i class="fas fa-bug"></i> <span class="lang-item" data-lang="en">Report bugs and issues</span><span class="lang-item" data-lang="fa">گزارش باگ و مسائل</span></li>
+                        <li><i class="fas fa-lightbulb"></i> <span class="lang-item" data-lang="en">Suggest new features</span><span class="lang-item" data-lang="fa">پیشنهاد ویژگی‌های جدید</span></li>
+                        <li><i class="fas fa-question-circle"></i> <span class="lang-item" data-lang="en">Help answer questions</span><span class="lang-item" data-lang="fa">کمک به پاسخ سوالات</span></li>
+                    </ul>
+                    <a href="https://github.com/hadivarp/rails-page-builder" class="cta-button" style="width: 100%; text-align: center;">
+                        <span class="lang-item" data-lang="en">Contribute</span>
+                        <span class="lang-item" data-lang="fa">مشارکت</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>
+                        <span class="lang-item" data-lang="en">Rails Page Builder</span>
+                        <span class="lang-item" data-lang="fa">ایجادکننده صفحات ریلز</span>
+                    </h3>
+                    <p>
+                        <span class="lang-item" data-lang="en">The most advanced visual page builder for Ruby on Rails applications. Build professional pages with ease.</span>
+                        <span class="lang-item" data-lang="fa">پیشرفته‌ترین ایجادکننده صفحات بصری برای برنامه‌های Ruby on Rails. صفحات حرفه‌ای با آسانی بسازید.</span>
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <a href="https://github.com/hadivarp/rails-page-builder" style="margin-right: 1rem; font-size: 1.5rem;"><i class="fab fa-github"></i></a>
+                        <a href="#" style="margin-right: 1rem; font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
+                        <a href="#" style="font-size: 1.5rem;"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>
+                        <span class="lang-item" data-lang="en">Product</span>
+                        <span class="lang-item" data-lang="fa">محصول</span>
+                    </h3>
+                    <ul>
+                        <li><a href="#features"><span class="lang-item" data-lang="en">Features</span><span class="lang-item" data-lang="fa">ویژگی‌ها</span></a></li>
+                        <li><a href="#demo"><span class="lang-item" data-lang="en">Demo</span><span class="lang-item" data-lang="fa">دمو</span></a></li>
+                        <li><a href="#support"><span class="lang-item" data-lang="en">Support</span><span class="lang-item" data-lang="fa">حمایت</span></a></li>
+                        <li><a href="#docs"><span class="lang-item" data-lang="en">Documentation</span><span class="lang-item" data-lang="fa">مستندات</span></a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>
+                        <span class="lang-item" data-lang="en">Support</span>
+                        <span class="lang-item" data-lang="fa">پشتیبانی</span>
+                    </h3>
+                    <ul>
+                        <li><a href="#docs"><span class="lang-item" data-lang="en">Documentation</span><span class="lang-item" data-lang="fa">مستندات</span></a></li>
+                        <li><a href="https://github.com/hadivarp/rails-page-builder/issues"><span class="lang-item" data-lang="en">Issue Tracker</span><span class="lang-item" data-lang="fa">ردیاب مسائل</span></a></li>
+                        <li><a href="#contact"><span class="lang-item" data-lang="en">Contact</span><span class="lang-item" data-lang="fa">تماس</span></a></li>
+                        <li><a href="#community"><span class="lang-item" data-lang="en">Community</span><span class="lang-item" data-lang="fa">انجمن</span></a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>
+                        <span class="lang-item" data-lang="en">Company</span>
+                        <span class="lang-item" data-lang="fa">شرکت</span>
+                    </h3>
+                    <ul>
+                        <li><a href="#about"><span class="lang-item" data-lang="en">About</span><span class="lang-item" data-lang="fa">درباره</span></a></li>
+                        <li><a href="#blog"><span class="lang-item" data-lang="en">Blog</span><span class="lang-item" data-lang="fa">بلاگ</span></a></li>
+                        <li><a href="#careers"><span class="lang-item" data-lang="en">Careers</span><span class="lang-item" data-lang="fa">مشاغل</span></a></li>
+                        <li><a href="#privacy"><span class="lang-item" data-lang="en">Privacy</span><span class="lang-item" data-lang="fa">حریم خصوصی</span></a></li>
+                        <li><a href="#terms"><span class="lang-item" data-lang="en">Terms</span><span class="lang-item" data-lang="fa">شرایط</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>
+                    <span class="lang-item" data-lang="en">&copy; 2024 Rails Page Builder. All rights reserved. Built with ❤️ for the Rails community.</span>
+                    <span class="lang-item" data-lang="fa">&copy; ۲۰۲۴ ایجادکننده صفحات ریلز. تمام حقوق محفوظ است. با ❤️ برای انجمن ریلز ساخته شده.</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Language switching functionality
+        let currentLang = 'en';
+        
+        function switchLanguage(lang) {
+            currentLang = lang;
+            const htmlRoot = document.getElementById('html-root');
+            const pageTitle = document.getElementById('page-title');
+            
+            // Update HTML attributes
+            if (lang === 'fa') {
+                htmlRoot.setAttribute('lang', 'fa');
+                htmlRoot.setAttribute('dir', 'rtl');
+                pageTitle.textContent = 'ایجادکننده صفحات ریلز - تولیدکننده صفحات استاتیک پویا برای Ruby on Rails';
+            } else {
+                htmlRoot.setAttribute('lang', 'en');
+                htmlRoot.setAttribute('dir', 'ltr');
+                pageTitle.textContent = 'Rails Page Builder - Dynamic Static Page Generator for Ruby on Rails';
+            }
+            
+            // Update button states
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.getElementById('btn-fa').classList.toggle('active', lang === 'fa');
+            
+            // Show/hide language-specific content
+            document.querySelectorAll('.lang-item').forEach(item => {
+                const itemLang = item.getAttribute('data-lang');
+                if (itemLang === lang) {
+                    item.classList.add('active');
+                    item.style.display = 'inline';
+                } else {
+                    item.classList.remove('active');
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Initialize with English
+        switchLanguage('en');
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = 'none';
+            }
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .language-card, .pricing-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // Create a temporary notification
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    ${currentLang === 'fa' ? 'left' : 'right'}: 20px;
+                    background: var(--success-color);
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    z-index: 9999;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    font-weight: 600;
+                `;
+                notification.textContent = currentLang === 'fa' ? 'آدرس کیف پول کپی شد!' : 'Wallet address copied to clipboard!';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 3000);
+            }).catch(function() {
+                const message = currentLang === 'fa' ? 
+                    'خطا در کپی کردن. لطفاً دستی کپی کنید: ' + text :
+                    'Failed to copy. Please manually copy: ' + text;
+                alert(message);
+            });
+        }
+    </script>
+</body>
+</html>
