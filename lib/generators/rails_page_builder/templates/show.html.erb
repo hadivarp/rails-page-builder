@@ -1,0 +1,61 @@
+<% content_for :title, @page.title %>
+
+<div class="page-header py-3 mb-4 border-bottom">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col">
+        <h1><%= @page.title %></h1>
+        <div class="text-muted">
+          <span class="badge badge-<%= @page.language == 'fa' ? 'info' : 'secondary' %>">
+            <%= @page.language.upcase %>
+          </span>
+          <span class="badge badge-<%= @page.published? ? 'success' : 'warning' %>">
+            <%= @page.published? ? 'Published' : 'Draft' %>
+          </span>
+        </div>
+      </div>
+      <div class="col-auto">
+        <%= link_to "Edit", edit_page_builder_page_path(@page), class: "btn btn-primary" %>
+        <%= link_to "Back to Pages", page_builder_pages_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-content-wrapper">
+  <% if @page.css.present? %>
+    <style>
+      <%= raw @page.full_css %>
+    </style>
+  <% end %>
+  
+  <div class="page-content <%= 'rtl' if @page.rtl? %>" 
+       dir="<%= @page.rtl? ? 'rtl' : 'ltr' %>" 
+       lang="<%= @page.language %>">
+    <%= render_page_content(@page.content, @page.language) %>
+  </div>
+</div>
+
+<style>
+  .page-content-wrapper {
+    min-height: 500px;
+  }
+  
+  .page-content {
+    line-height: 1.6;
+  }
+  
+  .page-content img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .page-content.rtl {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  .page-content .container-block {
+    border: none !important;
+  }
+</style>

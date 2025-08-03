@@ -1,0 +1,26 @@
+{
+  "component": {
+    "id": "custom-alert",
+    "name": "Custom Alert",
+    "description": "A customizable alert component",
+    "category": "ui_elements",
+    "template": "<div class=\"alert alert-{{type}}\">{{message}}</div>",
+    "properties": {
+      "message": {
+        "type": "string",
+        "default": "Alert message"
+      },
+      "type": {
+        "type": "string",
+        "default": "info",
+        "options": [
+          "info",
+          "warning",
+          "error",
+          "success"
+        ]
+      }
+    },
+    "css": ".alert { padding: 1rem; border-radius: 4px; margin: 1rem 0; }"
+  }
+}

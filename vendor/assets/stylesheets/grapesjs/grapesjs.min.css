@@ -1,0 +1,34 @@
+/*! 
+ * GrapesJS v0.20.4 CSS
+ * This is a placeholder file. In production, you should either:
+ * 1. Download the actual GrapesJS files from https://grapesjs.com/
+ * 2. Use a CDN link in your layout  
+ * 3. Use npm/yarn to install grapesjs package
+ * 
+ * CDN Example:
+ * <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+ */
+
+/* Minimal styles to prevent layout issues during development */
+.gjs-cv-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.gjs-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Warning message for missing GrapesJS */
+.gjs-cv-canvas::before {
+  content: "⚠️ GrapesJS CSS not loaded. Please include the actual GrapesJS stylesheet.";
+  display: block;
+  padding: 20px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}

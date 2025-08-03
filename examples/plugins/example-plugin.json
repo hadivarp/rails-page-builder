@@ -1,0 +1,17 @@
+{
+  "plugin": {
+    "id": "example-plugin",
+    "name": "Example Plugin",
+    "version": "1.0.0",
+    "author": "Your Name",
+    "description": "An example plugin showing the structure",
+    "category": "utility"
+  },
+  "hooks": {
+    "before_render": "Apply transformations before rendering",
+    "after_save": "Clean up after saving"
+  },
+  "filters": {
+    "content_filter": "Modify content as it flows through the system"
+  }
+}

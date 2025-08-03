@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rails Page Builder - Interactive Demo</title>
+    <meta name="description" content="Try the Rails Page Builder interactive demo. Experience real-time collaboration, multi-language support, and enterprise features.">
+    
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #ec4899;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+            overflow: hidden;
+        }
+        
+        /* Demo Header */
+        .demo-header {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .demo-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .demo-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .demo-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .demo-users {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .user-avatar.online::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background: var(--success-color);
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+        
+        .demo-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .control-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+        
+        .control-btn:hover {
+            background: var(--bg-light);
+            border-color: var(--primary-color);
+        }
+        
+        .control-btn.primary {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .control-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: relative;
+        }
+        
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            min-width: 150px;
+            z-index: 1001;
+            display: none;
+        }
+        
+        .language-dropdown.show {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .language-option:hover {
+            background: var(--bg-light);
+        }
+        
+        .language-option.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* Demo Container */
+        .demo-container {
+            height: calc(100vh - 80px);
+            display: flex;
+        }
+        
+        /* Side Panel */
+        .side-panel {
+            width: 300px;
+            background: white;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .panel-tab {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+        
+        .panel-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        /* Block Library */
+        .block-section {
+            margin-bottom: 2rem;
+        }
+        
+        .block-section h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .block-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+        
+        .block-item {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: grab;
+            transition: all 0.2s ease;
+            text-align: center;
+            background: white;
+        }
+        
+        .block-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+        }
+        
+        .block-item:active {
+            cursor: grabbing;
+        }
+        
+        .block-item i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .block-item span {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        
+        /* Templates Panel */
+        .template-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .template-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        .template-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+        
+        .template-preview {
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+        }
+        
+        .template-info {
+            padding: 0.75rem;
+        }
+        
+        .template-info h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .template-info p {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+        
+        /* Layers Panel */
+        .layers-tree {
+            font-size: 0.875rem;
+        }
+        
+        .layer-item {
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .layer-item:hover {
+            background: var(--bg-light);
+        }
+        
+        .layer-item.selected {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .layer-icon {
+            width: 16px;
+            text-align: center;
+        }
+        
+        /* Main Editor */
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .editor-toolbar {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding-right: 1rem;
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .toolbar-group:last-child {
+            border-right: none;
+        }
+        
+        .toolbar-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+        }
+        
+        .toolbar-btn:hover {
+            background: var(--bg-light);
+        }
+        
+        .toolbar-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .editor-viewport {
+            flex: 1;
+            background: #f0f0f0;
+            position: relative;
+            overflow: auto;
+        }
+        
+        /* GrapesJS Container */
+        #gjs {
+            height: 100%;
+            background: white;
+        }
+        
+        /* Properties Panel */
+        .properties-panel {
+            width: 280px;
+            background: white;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .properties-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .properties-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        /* Collaboration Features */
+        .collaboration-panel {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .collaboration-panel.show {
+            display: block;
+        }
+        
+        .collaboration-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .collaboration-content {
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .user-list {
+            margin-bottom: 1rem;
+        }
+        
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            background: var(--bg-light);
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+        
+        .user-status.editing {
+            color: var(--success-color);
+        }
+        
+        .comments-section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+        
+        .comment-item {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: var(--bg-light);
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .comment-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .side-panel {
+                width: 250px;
+            }
+            
+            .properties-panel {
+                width: 250px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .demo-nav {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .side-panel {
+                width: 200px;
+            }
+            
+            .properties-panel {
+                display: none;
+            }
+            
+            .collaboration-panel {
+                width: 280px;
+                right: 10px;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            max-width: 300px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .notification.warning {
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .notification-message {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Demo Header -->
+    <header class="demo-header">
+        <nav class="demo-nav">
+            <a href="landing_page_english.html" class="demo-logo">
+                <i class="fas fa-cube"></i> Rails Page Builder Demo
+            </a>
+            
+            <div class="demo-actions">
+                <!-- Active Users -->
+                <div class="demo-users">
+                    <div class="user-avatar online" style="background: #6366f1;" title="You">
+                        Y
+                    </div>
+                    <div class="user-avatar online" style="background: #ec4899;" title="Alice (Editor)">
+                        A
+                    </div>
+                    <div class="user-avatar online" style="background: #10b981;" title="Bob (Viewer)">
+                        B
+                    </div>
+                </div>
+                
+                <!-- Language Selector -->
+                <div class="language-selector">
+                    <button class="language-btn" id="languageBtn">
+                        🇺🇸 English <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="language-dropdown" id="languageDropdown">
+                        <div class="language-option active" data-lang="en">
+                            🇺🇸 English
+                        </div>
+                        <div class="language-option" data-lang="fa">
+                            🇮🇷 فارسی (Persian)
+                        </div>
+                        <div class="language-option" data-lang="ar">
+                            🇸🇦 العربية (Arabic)
+                        </div>
+                        <div class="language-option" data-lang="he">
+                            🇮🇱 עברית (Hebrew)
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Demo Controls -->
+                <div class="demo-controls">
+                    <button class="control-btn" id="collaborationBtn">
+                        <i class="fas fa-users"></i> Collaboration
+                    </button>
+                    <button class="control-btn" id="previewBtn">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                    <button class="control-btn primary" id="saveBtn">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Demo Container -->
+    <div class="demo-container">
+        <!-- Side Panel -->
+        <div class="side-panel">
+            <div class="panel-tabs">
+                <button class="panel-tab active" data-tab="blocks">
+                    <i class="fas fa-cubes"></i> Blocks
+                </button>
+                <button class="panel-tab" data-tab="templates">
+                    <i class="fas fa-file-alt"></i> Templates
+                </button>
+                <button class="panel-tab" data-tab="layers">
+                    <i class="fas fa-layer-group"></i> Layers
+                </button>
+            </div>
+            
+            <div class="panel-content">
+                <!-- Blocks Tab -->
+                <div class="tab-content active" id="blocks-tab">
+                    <div class="block-section">
+                        <h3>Layout</h3>
+                        <div class="block-grid">
+                            <div class="block-item" data-block="section">
+                                <i class="fas fa-square"></i>
+                                <span>Section</span>
+                            </div>
+                            <div class="block-item" data-block="container">
+                                <i class="fas fa-square-full"></i>
+                                <span>Container</span>
+                            </div>
+                            <div class="block-item" data-block="row">
+                                <i class="fas fa-grip-lines"></i>
+                                <span>Row</span>
+                            </div>
+                            <div class="block-item" data-block="column">
+                                <i class="fas fa-columns"></i>
+                                <span>Column</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="block-section">
+                        <h3>Content</h3>
+                        <div class="block-grid">
+                            <div class="block-item" data-block="text">
+                                <i class="fas fa-font"></i>
+                                <span>Text</span>
+                            </div>
+                            <div class="block-item" data-block="heading">
+                                <i class="fas fa-heading"></i>
+                                <span>Heading</span>
+                            </div>
+                            <div class="block-item" data-block="image">
+                                <i class="fas fa-image"></i>
+                                <span>Image</span>
+                            </div>
+                            <div class="block-item" data-block="button">
+                                <i class="fas fa-mouse-pointer"></i>
+                                <span>Button</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="block-section">
+                        <h3>Interactive</h3>
+                        <div class="block-grid">
+                            <div class="block-item" data-block="accordion">
+                                <i class="fas fa-list"></i>
+                                <span>Accordion</span>
+                            </div>
+                            <div class="block-item" data-block="tabs">
+                                <i class="fas fa-folder"></i>
+                                <span>Tabs</span>
+                            </div>
+                            <div class="block-item" data-block="carousel">
+                                <i class="fas fa-images"></i>
+                                <span>Carousel</span>
+                            </div>
+                            <div class="block-item" data-block="modal">
+                                <i class="fas fa-window-restore"></i>
+                                <span>Modal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Templates Tab -->
+                <div class="tab-content" id="templates-tab">
+                    <div class="template-grid">
+                        <div class="template-item" data-template="landing">
+                            <div class="template-preview">Landing Page</div>
+                            <div class="template-info">
+                                <h4>Landing Page</h4>
+                                <p>Modern marketing page with hero section and features</p>
+                            </div>
+                        </div>
+                        
+                        <div class="template-item" data-template="business">
+                            <div class="template-preview">Business</div>
+                            <div class="template-info">
+                                <h4>Business</h4>
+                                <p>Professional corporate website template</p>
+                            </div>
+                        </div>
+                        
+                        <div class="template-item" data-template="portfolio">
+                            <div class="template-preview">Portfolio</div>
+                            <div class="template-info">
+                                <h4>Portfolio</h4>
+                                <p>Creative showcase for designers and artists</p>
+                            </div>
+                        </div>
+                        
+                        <div class="template-item" data-template="blog">
+                            <div class="template-preview">Blog</div>
+                            <div class="template-info">
+                                <h4>Blog</h4>
+                                <p>Clean blog layout with article listings</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Layers Tab -->
+                <div class="tab-content" id="layers-tab">
+                    <div class="layers-tree">
+                        <div class="layer-item selected">
+                            <i class="fas fa-file-alt layer-icon"></i>
+                            <span>Page</span>
+                        </div>
+                        <div class="layer-item" style="padding-left: 1.5rem;">
+                            <i class="fas fa-square layer-icon"></i>
+                            <span>Header Section</span>
+                        </div>
+                        <div class="layer-item" style="padding-left: 3rem;">
+                            <i class="fas fa-heading layer-icon"></i>
+                            <span>Main Title</span>
+                        </div>
+                        <div class="layer-item" style="padding-left: 1.5rem;">
+                            <i class="fas fa-square layer-icon"></i>
+                            <span>Content Section</span>
+                        </div>
+                        <div class="layer-item" style="padding-left: 3rem;">
+                            <i class="fas fa-font layer-icon"></i>
+                            <span>Paragraph</span>
+                        </div>
+                        <div class="layer-item" style="padding-left: 1.5rem;">
+                            <i class="fas fa-square layer-icon"></i>
+                            <span>Footer Section</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Editor -->
+        <div class="editor-container">
+            <div class="editor-toolbar">
+                <div class="toolbar-group">
+                    <button class="toolbar-btn active" title="Select">
+                        <i class="fas fa-mouse-pointer"></i>
+                    </button>
+                    <button class="toolbar-btn" title="Move">
+                        <i class="fas fa-arrows-alt"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" title="Undo">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button class="toolbar-btn" title="Redo">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" title="Desktop View">
+                        <i class="fas fa-desktop"></i>
+                    </button>
+                    <button class="toolbar-btn" title="Tablet View">
+                        <i class="fas fa-tablet-alt"></i>
+                    </button>
+                    <button class="toolbar-btn" title="Mobile View">
+                        <i class="fas fa-mobile-alt"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" title="Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="editor-viewport">
+                <div id="gjs">
+                    <div style="padding: 40px 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <h1 style="font-size: 3rem; margin-bottom: 1rem;">Welcome to Rails Page Builder</h1>
+                        <p style="font-size: 1.25rem; margin-bottom: 2rem;">Start building amazing pages with our drag-and-drop editor</p>
+                        <button style="background: white; color: #667eea; padding: 1rem 2rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Get Started</button>
+                    </div>
+                    
+                    <div style="padding: 60px 20px; background: #f9fafb;">
+                        <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+                            <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: #1f2937;">Powerful Features</h2>
+                            <p style="font-size: 1.125rem; color: #6b7280; margin-bottom: 3rem;">Everything you need to build professional pages</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                                <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);">
+                                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366f1, #ec4899); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; margin: 0 auto 1.5rem;">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">Real-time Collaboration</h3>
+                                    <p style="color: #6b7280;">Multiple users can edit pages simultaneously with live updates</p>
+                                </div>
+                                
+                                <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);">
+                                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366f1, #ec4899); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; margin: 0 auto 1.5rem;">
+                                        <i class="fas fa-globe"></i>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">Multi-language Support</h3>
+                                    <p style="color: #6b7280;">Built-in support for English, Persian, Arabic, and Hebrew</p>
+                                </div>
+                                
+                                <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);">
+                                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366f1, #ec4899); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; margin: 0 auto 1.5rem;">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">Enterprise Security</h3>
+                                    <p style="color: #6b7280;">Role-based permissions and comprehensive security features</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Properties Panel -->
+        <div class="properties-panel">
+            <div class="properties-header">
+                <i class="fas fa-cog"></i> Properties
+            </div>
+            <div class="properties-content">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 500;">Text Content</label>
+                    <input type="text" value="Welcome to Rails Page Builder" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem;">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 500;">Font Size</label>
+                    <input type="range" min="12" max="72" value="48" style="width: 100%;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">
+                        <span>12px</span>
+                        <span>72px</span>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 500;">Text Color</label>
+                    <input type="color" value="#ffffff" style="width: 100%; height: 40px; border: 1px solid var(--border-color); border-radius: 4px;">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 500;">Background</label>
+                    <select style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem;">
+                        <option>Gradient</option>
+                        <option>Solid Color</option>
+                        <option>Image</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 500;">Padding</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <input type="number" placeholder="Top" value="40" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem;">
+                        <input type="number" placeholder="Right" value="20" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem;">
+                        <input type="number" placeholder="Bottom" value="40" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem;">
+                        <input type="number" placeholder="Left" value="20" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collaboration Panel -->
+    <div class="collaboration-panel" id="collaborationPanel">
+        <div class="collaboration-header">
+            <i class="fas fa-users"></i> Active Collaborators
+        </div>
+        <div class="collaboration-content">
+            <div class="user-list">
+                <div class="user-item">
+                    <div class="user-avatar" style="background: #6366f1;">Y</div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.875rem;">You</div>
+                        <div class="user-status editing">Currently editing</div>
+                    </div>
+                </div>
+                
+                <div class="user-item">
+                    <div class="user-avatar" style="background: #ec4899;">A</div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.875rem;">Alice Johnson</div>
+                        <div class="user-status">Viewing page</div>
+                    </div>
+                </div>
+                
+                <div class="user-item">
+                    <div class="user-avatar" style="background: #10b981;">B</div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.875rem;">Bob Smith</div>
+                        <div class="user-status">Online</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comments-section">
+                <h4 style="font-size: 0.875rem; margin-bottom: 0.75rem;">Recent Comments</h4>
+                
+                <div class="comment-item">
+                    <div class="comment-author">Alice Johnson</div>
+                    <div>Let's try a different color for the button</div>
+                    <div class="comment-time">2 minutes ago</div>
+                </div>
+                
+                <div class="comment-item">
+                    <div class="comment-author">Bob Smith</div>
+                    <div>The hero section looks great!</div>
+                    <div class="comment-time">5 minutes ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/grapesjs"></script>
+    <script>
+        // Initialize GrapesJS
+        let editor;
+        let currentLanguage = 'en';
+        
+        // Language content
+        const languageContent = {
+            en: {
+                title: 'Welcome to Rails Page Builder',
+                subtitle: 'Start building amazing pages with our drag-and-drop editor',
+                button: 'Get Started',
+                featuresTitle: 'Powerful Features',
+                featuresSubtitle: 'Everything you need to build professional pages'
+            },
+            fa: {
+                title: 'به ایجادکننده صفحات ریلز خوش آمدید',
+                subtitle: 'شروع به ساخت صفحات شگفت‌انگیز با ویرایشگر کشیدن و رها کردن ما کنید',
+                button: 'شروع کنید',
+                featuresTitle: 'ویژگی‌های قدرتمند',
+                featuresSubtitle: 'همه چیزی که برای ساخت صفحات حرفه‌ای نیاز دارید'
+            },
+            ar: {
+                title: 'مرحباً بمنشئ صفحات ريلز',
+                subtitle: 'ابدأ في بناء صفحات مذهلة مع محرر السحب والإفلات',
+                button: 'ابدأ',
+                featuresTitle: 'ميزات قوية',
+                featuresSubtitle: 'كل ما تحتاجه لبناء صفحات احترافية'
+            },
+            he: {
+                title: 'ברוכים הבאים לבונה דפי ריילס',
+                subtitle: 'התחל לבנות דפים מדהימים עם עורך הגרירה והשחרור שלנו',
+                button: 'התחל',
+                featuresTitle: 'תכונות חזקות',
+                featuresSubtitle: 'כל מה שאתה צריך כדי לבנות דפים מקצועיים'
+            }
+        };
+
+        // Initialize editor after page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading overlay after 2 seconds
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                initializeEditor();
+                showNotification('Demo loaded successfully!', 'success');
+            }, 2000);
+        });
+
+        function initializeEditor() {
+            editor = grapesjs.init({
+                container: '#gjs',
+                height: '100%',
+                width: 'auto',
+                storageManager: false,
+                panels: { defaults: [] },
+                blockManager: {
+                    appendTo: '.blocks-container'
+                },
+                layerManager: {
+                    appendTo: '.layers-container'
+                },
+                selectorManager: {
+                    appendTo: '.styles-container'
+                },
+                plugins: [],
+                canvas: {
+                    styles: [
+                        'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
+                    ]
+                }
+            });
+
+            // Add event listeners
+            setupEventListeners();
+            
+            // Simulate collaboration features
+            simulateCollaboration();
+        }
+
+        function setupEventListeners() {
+            // Tab switching
+            document.querySelectorAll('.panel-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+
+            // Language selector
+            document.getElementById('languageBtn').addEventListener('click', function() {
+                const dropdown = document.getElementById('languageDropdown');
+                dropdown.classList.toggle('show');
+            });
+
+            // Language options
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    switchLanguage(this.dataset.lang);
+                    document.getElementById('languageDropdown').classList.remove('show');
+                });
+            });
+
+            // Collaboration button
+            document.getElementById('collaborationBtn').addEventListener('click', function() {
+                const panel = document.getElementById('collaborationPanel');
+                panel.classList.toggle('show');
+            });
+
+            // Demo controls
+            document.getElementById('previewBtn').addEventListener('click', function() {
+                showNotification('Preview mode activated', 'success');
+            });
+
+            document.getElementById('saveBtn').addEventListener('click', function() {
+                showNotification('Page saved successfully!', 'success');
+            });
+
+            // Block items (drag simulation)
+            document.querySelectorAll('.block-item').forEach(block => {
+                block.addEventListener('click', function() {
+                    const blockType = this.dataset.block;
+                    showNotification(`${blockType} block added to page`, 'success');
+                });
+            });
+
+            // Template items
+            document.querySelectorAll('.template-item').forEach(template => {
+                template.addEventListener('click', function() {
+                    const templateType = this.dataset.template;
+                    showNotification(`${templateType} template applied`, 'success');
+                });
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.language-selector')) {
+                    document.getElementById('languageDropdown').classList.remove('show');
+                }
+                if (!e.target.closest('.collaboration-panel') && !e.target.closest('#collaborationBtn')) {
+                    document.getElementById('collaborationPanel').classList.remove('show');
+                }
+            });
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.panel-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update language button
+            const flags = { en: '🇺🇸', fa: '🇮🇷', ar: '🇸🇦', he: '🇮🇱' };
+            const names = { en: 'English', fa: 'فارسی', ar: 'العربية', he: 'עברית' };
+            
+            document.getElementById('languageBtn').innerHTML = `${flags[lang]} ${names[lang]} <i class="fas fa-chevron-down"></i>`;
+            
+            // Update language options
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.lang === lang) {
+                    option.classList.add('active');
+                }
+            });
+
+            // Update content direction for RTL languages
+            const isRTL = ['fa', 'ar', 'he'].includes(lang);
+            if (isRTL) {
+                document.body.style.direction = 'rtl';
+                document.body.style.fontFamily = "'Vazirmatn', 'Inter', sans-serif";
+            } else {
+                document.body.style.direction = 'ltr';
+                document.body.style.fontFamily = "'Inter', sans-serif";
+            }
+
+            // Update demo content
+            updateDemoContent(lang);
+            
+            showNotification(`Language switched to ${names[lang]}`, 'success');
+        }
+
+        function updateDemoContent(lang) {
+            const content = languageContent[lang];
+            const isRTL = ['fa', 'ar', 'he'].includes(lang);
+            
+            // This would update the actual editor content
+            // For demo purposes, we'll just show a notification
+            showNotification(`Demo content updated for ${lang}`, 'success');
+        }
+
+        function simulateCollaboration() {
+            // Simulate user activity
+            setInterval(() => {
+                const activities = [
+                    'Alice is editing the header section',
+                    'Bob added a comment',
+                    'Alice changed button color',
+                    'Bob is viewing analytics',
+                    'New user joined the session'
+                ];
+                
+                const activity = activities[Math.floor(Math.random() * activities.length)];
+                
+                // Randomly show notifications
+                if (Math.random() > 0.7) {
+                    showNotification(activity, 'success');
+                }
+            }, 8000);
+        }
+
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notificationContainer');
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-title">Rails Page Builder</div>
+                <div class="notification-message">${message}</div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Hide and remove notification
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Simulate real-time features
+        function simulateRealTimeFeatures() {
+            // Simulate cursor movements
+            setInterval(() => {
+                // This would show other users' cursors in a real implementation
+            }, 2000);
+            
+            // Simulate content updates
+            setInterval(() => {
+                // This would sync content changes in a real implementation
+            }, 5000);
+        }
+
+        // Start real-time simulation
+        setTimeout(simulateRealTimeFeatures, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rails Page Builder - Language Selection</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            color: white;
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { margin-bottom: 20px; font-size: 2.5rem; }
+        p { margin-bottom: 30px; opacity: 0.9; font-size: 1.1rem; }
+        .language-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .lang-btn {
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            font-size: 1.1rem;
+        }
+        .lang-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: white;
+            transform: translateY(-2px);
+        }
+        .auto-redirect {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Rails Page Builder</h1>
+        <p>Choose your preferred language<br>زبان مورد نظر خود را انتخاب کنید</p>
+        <div class="language-buttons">
+            <a href="unified_dashboard_fa.html" class="lang-btn">🇮🇷 فارسی</a>
+            <a href="unified_dashboard_ar.html" class="lang-btn">🇸🇦 العربية</a>
+            <a href="unified_dashboard_he.html" class="lang-btn">🇮🇱 עברית</a>
+            <a href="unified_dashboard_en.html" class="lang-btn">🇺🇸 English</a>
+        </div>
+        <div class="auto-redirect">
+            Auto-redirecting to Persian in <span id="countdown">5</span> seconds...
+        </div>
+    </div>
+    <script>
+        let countdown = 5;
+        const countdownEl = document.getElementById('countdown');
+        
+        const timer = setInterval(() => {
+            countdown--;
+            countdownEl.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                window.location.href = 'unified_dashboard_fa.html';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

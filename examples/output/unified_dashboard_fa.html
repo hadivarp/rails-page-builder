@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد ساخت صفحه ریلز</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Vazirmatn', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .language-switcher a {
+            color: white;
+            text-decoration: none;
+            margin: 0 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        .language-switcher a:hover,
+        .language-switcher a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #4a5568;
+            font-weight: 500;
+        }
+        
+        .unified-content {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            text-align: right;
+            border-bottom: 3px solid #4299e1;
+            padding-bottom: 10px;
+        }
+        
+        .feature-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .feature-showcase {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher">
+        <a href="unified_dashboard_fa.html" class="active">فا</a>
+        <a href="unified_dashboard_ar.html" class="">ع</a>
+        <a href="unified_dashboard_he.html" class="">ע</a>
+        <a href="unified_dashboard_en.html" class="">EN</a>
+    </div>
+    
+    <div class="dashboard-container">
+        <header class="header">
+            <h1>داشبورد ساخت صفحه ریلز</h1>
+            <p>سیستم پیشرفته ساخت صفحه با پشتیبانی کامل از زبان‌های راست به چپ</p>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-icon">🧱</span>
+                <div class="stat-number">39</div>
+                <div class="stat-label">تعداد بلوک‌ها</div>
+            </div>
+            
+            <div class="stat-card">
+                <span class="stat-icon">🎨</span>
+                <div class="stat-number">11</div>
+                <div class="stat-label">تعداد قالب‌ها</div>
+            </div>
+            
+            <div class="stat-card">
+                <span class="stat-icon">🌍</span>
+                <div class="stat-number">4</div>
+                <div class="stat-label">زبان‌های پشتیبانی شده</div>
+            </div>
+            
+            <div class="stat-card">
+                <span class="stat-icon">🔌</span>
+                <div class="stat-number">1</div>
+                <div class="stat-label">افزونه‌های فعال</div>
+            </div>
+            
+            <div class="stat-card">
+                <span class="stat-icon">🛠️</span>
+                <div class="stat-number">10</div>
+                <div class="stat-label">ابزارهای ویرایشگر</div>
+            </div>
+            
+            <div class="stat-card">
+                <span class="stat-icon">🌐</span>
+                <div class="stat-number">1</div>
+                <div class="stat-label">یکپارچه‌سازی‌های API</div>
+            </div>
+        </div>
+        
+        <div class="unified-content">
+            <h2 class="section-title">فاز یک: بلوک‌ها و قالب‌ها + فاز دو: سیستم‌های پیشرفته</h2>
+            <div class="feature-showcase">
+                <div class="feature-card">
+                    <span class="feature-icon">🧱</span>
+                    <div class="feature-title">کتابخانه بلوک پیشرفته</div>
+                    <p>39 بلوک در 11 دسته‌بندی مختلف</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🎨</span>
+                    <div class="feature-title">سیستم قالب‌ها</div>
+                    <p>قالب‌های آماده و قابل تنظیم</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🌍</span>
+                    <div class="feature-title">پشتیبانی چندزبانه</div>
+                    <p>RTL و LTR با تشخیص خودکار</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">📁</span>
+                    <div class="feature-title">مدیریت دارایی‌ها</div>
+                    <p>آپلود و مدیریت تصاویر و فایل‌ها</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">📦</span>
+                    <div class="feature-title">سیستم افزونه‌ها</div>
+                    <p>معماری قابل توسعه با Hook و Filter</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🌐</span>
+                    <div class="feature-title">یکپارچه‌سازی API</div>
+                    <p>اتصال به سرویس‌های خارجی</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🛠️</span>
+                    <div class="feature-title">ویرایشگر پیشرفته</div>
+                    <p>ابزارهای حرفه‌ای ویرایش</p>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🧩</span>
+                    <div class="feature-title">کامپوننت‌های قابل استفاده</div>
+                    <p>اجزای پیش‌ساخته و قابل تنظیم</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <h3>🎉 Rails Page Builder - نسخه کامل</h3>
+            <p>سیستم جامع ساخت صفحه با پشتیبانی RTL و ویژگی‌های پیشرفته</p>
+            <p style="margin-top: 15px; opacity: 0.9;">
+                <strong>آمار کلی:</strong><br>
+                39 بلوک • 11 دسته‌بندی • 4 زبان • 1 افزونه • 1 API • 10 ابزار
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Rails Page Builder Unified Dashboard');
+            console.log('Language: fa');
+            console.log('Direction: rtl');
+            console.log('Total Blocks: 39');
+            console.log('Total Categories: 11');
+            console.log('Plugins: 1');
+            console.log('APIs: 1');
+            console.log('Editor Tools: 10');
+        });
+    </script>
+</body>
+</html>

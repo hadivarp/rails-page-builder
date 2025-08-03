@@ -1,0 +1,70 @@
+<% content_for :title, "Page Builder" %>
+<%= page_builder_assets %>
+
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h1>Page Builder</h1>
+      <%= link_to "New Page", new_page_builder_page_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Language</th>
+              <th>Status</th>
+              <th>Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @pages.each do |page| %>
+              <tr>
+                <td>
+                  <%= link_to page.title, page_builder_page_path(page) %>
+                  <br>
+                  <small class="text-muted">/<%= page.slug %></small>
+                </td>
+                <td>
+                  <span class="badge badge-<%= page.language == 'fa' ? 'info' : 'secondary' %>">
+                    <%= page.language.upcase %>
+                    <%= "RTL" if page.rtl? %>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge badge-<%= page.published? ? 'success' : 'warning' %>">
+                    <%= page.published? ? 'Published' : 'Draft' %>
+                  </span>
+                </td>
+                <td>
+                  <%= time_ago_in_words(page.updated_at) %> ago
+                </td>
+                <td>
+                  <%= link_to "Edit", edit_page_builder_page_path(page), class: "btn btn-sm btn-outline-primary" %>
+                  <%= link_to "View", page_builder_page_path(page), class: "btn btn-sm btn-outline-secondary" %>
+                  <%= link_to "Delete", page_builder_page_path(page), 
+                      method: :delete, 
+                      class: "btn btn-sm btn-outline-danger",
+                      confirm: "Are you sure?" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        
+        <% if @pages.empty? %>
+          <div class="text-center py-5">
+            <h3 class="text-muted">No pages yet</h3>
+            <p>Create your first page to get started!</p>
+            <%= link_to "Create Page", new_page_builder_page_path, class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

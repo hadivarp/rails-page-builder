@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rails Page Builder Demo</title>
+    
+    <!-- GrapesJS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+    
+    <!-- Page Builder CSS -->
+    <style>
+        /* Rails Page Builder Styles */
+        .page-builder-container {
+            display: flex;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .page-builder-sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-builder-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-builder-toolbar {
+            height: 50px;
+            background: #fff;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            gap: 10px;
+        }
+
+        .page-builder-canvas {
+            flex: 1;
+            position: relative;
+        }
+
+        .panel__switcher {
+            display: flex;
+            background: #fff;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .panel__switcher button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .panel__switcher button.active {
+            border-bottom-color: #007bff;
+            color: #007bff;
+        }
+
+        .panel__right {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .blocks-container,
+        .layers-container,
+        .styles-container {
+            display: none;
+        }
+
+        .blocks-container.active,
+        .layers-container.active,
+        .styles-container.active {
+            display: block;
+        }
+
+        .gjs-block {
+            width: auto !important;
+            height: auto !important;
+            min-height: 48px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .gjs-block:hover {
+            border-color: #007bff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            background: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        /* RTL Support */
+        .rtl {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .rtl .page-builder-container {
+            direction: rtl;
+        }
+
+        .rtl .page-builder-sidebar {
+            border-right: none;
+            border-left: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-builder-container">
+        <div class="page-builder-sidebar">
+            <div class="panel__switcher">
+                <button id="show-blocks" class="active">Blocks / بلوک‌ها</button>
+                <button id="show-layers">Layers / لایه‌ها</button>
+                <button id="show-styles">Styles / استایل‌ها</button>
+            </div>
+            
+            <div class="panel__right">
+                <div class="blocks-container active"></div>
+                <div class="layers-container"></div>
+                <div class="styles-container"></div>
+            </div>
+        </div>
+        
+        <div class="page-builder-main">
+            <div class="page-builder-toolbar">
+                <button class="btn" onclick="toggleLanguage()">🌐 Toggle Language</button>
+                <button class="btn" onclick="previewMode()">👁️ Preview</button>
+                <button class="btn" onclick="saveContent()">💾 Save</button>
+                <button class="btn" onclick="loadTemplate()">📄 Load Template</button>
+                <span id="current-lang">EN</span>
+            </div>
+            
+            <div class="page-builder-canvas">
+                <div id="gjs" style="height: 100%; width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GrapesJS JS -->
+    <script src="https://unpkg.com/grapesjs"></script>
+    
+    <script>
+        let currentLanguage = 'en';
+        let editor;
+        
+        // Initialize GrapesJS
+        function initEditor(language = 'en') {
+            const isRTL = language === 'fa';
+            
+            if (editor) {
+                editor.destroy();
+            }
+            
+            editor = grapesjs.init({
+                container: '#gjs',
+                fromElement: true,
+                width: 'auto',
+                storageManager: false,
+                blockManager: {
+                    appendTo: '.blocks-container',
+                    blocks: [
+                        {
+                            id: 'text',
+                            label: language === 'fa' ? 'متن' : 'Text',
+                            content: `<div class="text-block" style="padding: 10px; ${isRTL ? 'direction: rtl; text-align: right;' : ''}">${language === 'fa' ? 'متن نمونه' : 'Sample text'}</div>`,
+                            category: language === 'fa' ? 'پایه' : 'Basic'
+                        },
+                        {
+                            id: 'image',
+                            label: language === 'fa' ? 'تصویر' : 'Image',
+                            content: '<img src="https://via.placeholder.com/300x200" alt="Image" style="max-width: 100%;"/>',
+                            category: language === 'fa' ? 'رسانه' : 'Media'
+                        },
+                        {
+                            id: 'heading',
+                            label: language === 'fa' ? 'عنوان' : 'Heading',
+                            content: `<h2 style="margin: 10px 0; ${isRTL ? 'direction: rtl; text-align: right;' : ''}">${language === 'fa' ? 'عنوان نمونه' : 'Sample Heading'}</h2>`,
+                            category: language === 'fa' ? 'پایه' : 'Basic'
+                        },
+                        {
+                            id: 'button',
+                            label: language === 'fa' ? 'دکمه' : 'Button',
+                            content: `<button style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">${language === 'fa' ? 'دکمه' : 'Button'}</button>`,
+                            category: language === 'fa' ? 'اجزا' : 'Components'
+                        }
+                    ]
+                },
+                styleManager: {
+                    appendTo: '.styles-container',
+                    sectors: [
+                        {
+                            name: language === 'fa' ? 'ابعاد' : 'Dimension',
+                            properties: ['width', 'height', 'padding', 'margin']
+                        },
+                        {
+                            name: language === 'fa' ? 'تایپوگرافی' : 'Typography',
+                            properties: ['font-size', 'font-weight', 'color', 'text-align']
+                        }
+                    ]
+                },
+                layerManager: {
+                    appendTo: '.layers-container'
+                },
+                panels: {
+                    defaults: []
+                },
+                deviceManager: {
+                    devices: [
+                        {
+                            name: language === 'fa' ? 'دسکتاپ' : 'Desktop',
+                            width: ''
+                        },
+                        {
+                            name: language === 'fa' ? 'تبلت' : 'Tablet',
+                            width: '768px'
+                        },
+                        {
+                            name: language === 'fa' ? 'موبایل' : 'Mobile',
+                            width: '320px'
+                        }
+                    ]
+                }
+            });
+            
+            // Setup RTL for canvas
+            if (isRTL) {
+                editor.on('load', function() {
+                    const iframe = editor.Canvas.getFrameEl();
+                    if (iframe && iframe.contentDocument) {
+                        iframe.contentDocument.body.style.direction = 'rtl';
+                        iframe.contentDocument.documentElement.style.direction = 'rtl';
+                    }
+                });
+            }
+            
+            // Add some sample content
+            editor.setComponents(`
+                <div style="padding: 20px; ${isRTL ? 'direction: rtl; text-align: right;' : ''}">
+                    <h1>${language === 'fa' ? 'صفحه ساز تصویری ریلز' : 'Rails Visual Page Builder'}</h1>
+                    <p>${language === 'fa' ? 'این یک نمونه از صفحه ساز تصویری است که از GrapesJS استفاده می‌کند و از زبان فارسی پشتیبانی می‌کند.' : 'This is a sample visual page builder using GrapesJS with multi-language support.'}</p>
+                    <img src="https://via.placeholder.com/400x200" alt="Sample" style="max-width: 100%; margin: 20px 0;"/>
+                    <button style="padding: 12px 24px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        ${language === 'fa' ? 'دکمه نمونه' : 'Sample Button'}
+                    </button>
+                </div>
+            `);
+        }
+        
+        // Panel switching
+        document.querySelectorAll('.panel__switcher button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.panel__switcher button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const containers = ['.blocks-container', '.layers-container', '.styles-container'];
+                containers.forEach(selector => {
+                    const container = document.querySelector(selector);
+                    if (container) container.classList.remove('active');
+                });
+                
+                const targetId = this.id.replace('show-', '') + '-container';
+                const targetContainer = document.querySelector('.' + targetId);
+                if (targetContainer) targetContainer.classList.add('active');
+            });
+        });
+        
+        // Language toggle
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'fa' : 'en';
+            document.getElementById('current-lang').textContent = currentLanguage.toUpperCase();
+            
+            if (currentLanguage === 'fa') {
+                document.body.classList.add('rtl');
+            } else {
+                document.body.classList.remove('rtl');
+            }
+            
+            initEditor(currentLanguage);
+        }
+        
+        // Preview mode
+        function previewMode() {
+            if (editor) {
+                const commands = editor.Commands;
+                commands.run('core:preview');
+            }
+        }
+        
+        // Save content
+        function saveContent() {
+            if (editor) {
+                const html = editor.getHtml();
+                const css = editor.getCss();
+                
+                console.log('HTML Content:', html);
+                console.log('CSS Content:', css);
+                
+                alert(`${currentLanguage === 'fa' ? 'محتوا ذخیره شد!' : 'Content saved!'}\n\nCheck browser console for HTML/CSS output.`);
+            }
+        }
+        
+        // Load template
+        function loadTemplate() {
+            const templates = {
+                en: {
+                    landing: {
+                        name: 'Landing Page',
+                        content: `
+                            <div style="direction: ltr;">
+                                <!-- Hero Section -->
+                                <section style="
+                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                    color: white;
+                                    padding: 100px 20px;
+                                    text-align: center;
+                                    min-height: 600px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <div style="max-width: 800px;">
+                                        <h1 style="font-size: 3.5rem; margin-bottom: 20px; font-weight: 700;">The Best Solution for Your Business</h1>
+                                        <p style="font-size: 1.3rem; margin-bottom: 40px; opacity: 0.9;">We help you achieve your goals with cutting-edge technology</p>
+                                        <button style="
+                                            background: #fff;
+                                            color: #667eea;
+                                            padding: 15px 40px;
+                                            border: none;
+                                            border-radius: 50px;
+                                            font-size: 1.2rem;
+                                            font-weight: 600;
+                                            cursor: pointer;
+                                            margin: 0 10px;
+                                        ">Start Free Trial</button>
+                                        <button style="
+                                            background: transparent;
+                                            color: white;
+                                            border: 2px solid white;
+                                            padding: 15px 40px;
+                                            border-radius: 50px;
+                                            font-size: 1.2rem;
+                                            font-weight: 600;
+                                            cursor: pointer;
+                                            margin: 0 10px;
+                                        ">Learn More</button>
+                                    </div>
+                                </section>
+                                
+                                <!-- Features Section -->
+                                <section style="padding: 80px 20px; background: #f8f9fa;">
+                                    <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+                                        <h2 style="font-size: 2.5rem; margin-bottom: 60px; color: #495057;">Why Choose Us?</h2>
+                                        <div style="
+                                            display: grid;
+                                            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                                            gap: 40px;
+                                        ">
+                                            <div style="background: white; padding: 40px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem;">⚡</div>
+                                                <h3 style="margin: 0 0 15px 0; color: #495057;">High Speed</h3>
+                                                <p style="color: #6c757d; line-height: 1.6;">Fast and optimized performance for your business needs</p>
+                                            </div>
+                                            <div style="background: white; padding: 40px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem;">🔒</div>
+                                                <h3 style="margin: 0 0 15px 0; color: #495057;">Complete Security</h3>
+                                                <p style="color: #6c757d; line-height: 1.6;">Your data security is our top priority</p>
+                                            </div>
+                                            <div style="background: white; padding: 40px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem;">🎧</div>
+                                                <h3 style="margin: 0 0 15px 0; color: #495057;">24/7 Support</h3>
+                                                <p style="color: #6c757d; line-height: 1.6;">Support available around the clock</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                
+                                <!-- CTA Section -->
+                                <section style="
+                                    background: linear-gradient(135deg, #28a745, #20c997);
+                                    color: white;
+                                    padding: 80px 20px;
+                                    text-align: center;
+                                ">
+                                    <div style="max-width: 800px; margin: 0 auto;">
+                                        <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Ready to Get Started?</h2>
+                                        <p style="font-size: 1.3rem; margin-bottom: 40px; opacity: 0.9;">Join thousands of satisfied customers today</p>
+                                        <button style="
+                                            background: white;
+                                            color: #28a745;
+                                            padding: 15px 40px;
+                                            border: none;
+                                            border-radius: 50px;
+                                            font-size: 1.2rem;
+                                            font-weight: 600;
+                                            cursor: pointer;
+                                        ">Get Started</button>
+                                    </div>
+                                </section>
+                            </div>
+                        `
+                    }
+                },
+                fa: {
+                    landing: {
+                        name: 'صفحه فرود',
+                        content: `
+                            <div style="direction: rtl;">
+                                <!-- بخش اصلی -->
+                                <section style="
+                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                    color: white;
+                                    padding: 100px 20px;
+                                    text-align: center;
+                                    min-height: 600px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <div style="max-width: 800px;">
+                                        <h1 style="font-size: 3.5rem; margin-bottom: 20px; font-weight: 700;">بهترین راه‌حل برای کسب و کار شما</h1>
+                                        <p style="font-size: 1.3rem; margin-bottom: 40px; opacity: 0.9;">ما به شما کمک می‌کنیم تا با فناوری پیشرفته اهداف خود را محقق کنید</p>
+                                        <button style="
+                                            background: #fff;
+                                            color: #667eea;
+                                            padding: 15px 40px;
+                                            border: none;
+                                            border-radius: 50px;
+                                            font-size: 1.2rem;
+                                            font-weight: 600;
+                                            cursor: pointer;
+                                            margin: 0 10px;
+                                        ">شروع رایگان</button>
+                                        <button style="
+                                            background: transparent;
+                                            color: white;
+                                            border: 2px solid white;
+                                            padding: 15px 40px;
+                                            border-radius: 50px;
+                                            font-size: 1.2rem;
+                                            font-weight: 600;
+                                            cursor: pointer;
+                                            margin: 0 10px;
+                                        ">بیشتر بدانید</button>
+                                    </div>
+                                </section>
+                                
+                                <!-- بخش ویژگی‌ها -->
+                                <section style="padding: 80px 20px; background: #f8f9fa;">
+                                    <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+                                        <h2 style="font-size: 2.5rem; margin-bottom: 60px; color: #495057;">چرا ما را انتخاب کنید؟</h2>
+                                        <div style="
+                                            display: grid;
+                                            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                                            gap: 40px;
+                                        ">
+                                            <div style="background: white; padding: 40px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem;">⚡</div>
+                                                <h3 style="margin: 0 0 15px 0; color: #495057;">سرعت بالا</h3>
+                                                <p style="color: #6c757d; line-height: 1.6;">عملکرد سریع و بهینه برای نیازهای کسب و کار شما</p>
+                                            </div>
+                                            <div style="background: white; padding: 40px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem;">🔒</div>
+                                                <h3 style="margin: 0 0 15px 0; color: #495057;">امنیت کامل</h3>
+                                                <p style="color: #6c757d; line-height: 1.6;">امنیت داده‌های شما اولویت اصلی ماست</p>
+                                            </div>
+                                            <div style="background: white; padding: 40px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                                                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem;">🎧</div>
+                                                <h3 style="margin: 0 0 15px 0; color: #495057;">پشتیبانی ۲۴/۷</h3>
+                                                <p style="color: #6c757d; line-height: 1.6;">پشتیبانی در تمام ساعات شبانه روز</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                
+                                <!-- بخش فراخوان عمل -->
+                                <section style="
+                                    background: linear-gradient(135deg, #28a745, #20c997);
+                                    color: white;
+                                    padding: 80px 20px;
+                                    text-align: center;
+                                ">
+                                    <div style="max-width: 800px; margin: 0 auto;">
+                                        <h2 style="font-size: 2.5rem; margin-bottom: 20px;">آماده شروع هستید؟</h2>
+                                        <p style="font-size: 1.3rem; margin-bottom: 40px; opacity: 0.9;">همین امروز به هزاران مشتری راضی بپیوندید</p>
+                                        <button style="
+                                            background: white;
+                                            color: #28a745;
+                                            padding: 15px 40px;
+                                            border: none;
+                                            border-radius: 50px;
+                                            font-size: 1.2rem;
+                                            font-weight: 600;
+                                            cursor: pointer;
+                                        ">شروع کنید</button>
+                                    </div>
+                                </section>
+                            </div>
+                        `
+                    }
+                }
+            };
+            
+            if (editor) {
+                const template = templates[currentLanguage].landing;
+                editor.setComponents(template.content);
+                
+                alert(`${currentLanguage === 'fa' ? 'قالب' : 'Template'} "${template.name}" ${currentLanguage === 'fa' ? 'بارگذاری شد!' : 'loaded!'}`);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initEditor('en');
+        });
+    </script>
+</body>
+</html>

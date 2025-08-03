@@ -1,0 +1,138 @@
+<% content_for :title, "Edit #{@page.title}" %>
+<%= page_builder_assets %>
+
+<div class="page-builder-container">
+  <div class="page-builder-sidebar">
+    <div class="panel__switcher">
+      <button id="show-blocks" class="active">
+        <%= @page.language == 'fa' ? 'بلوک‌ها' : 'Blocks' %>
+      </button>
+      <button id="show-layers">
+        <%= @page.language == 'fa' ? 'لایه‌ها' : 'Layers' %>
+      </button>
+      <button id="show-styles">
+        <%= @page.language == 'fa' ? 'استایل‌ها' : 'Styles' %>
+      </button>
+    </div>
+    
+    <div class="panel__right">
+      <div class="blocks-container active"></div>
+      <div class="layers-container"></div>
+      <div class="styles-container"></div>
+      <div class="traits-container"></div>
+    </div>
+  </div>
+  
+  <div class="page-builder-main">
+    <div class="page-builder-toolbar">
+      <div class="toolbar-left">
+        <button class="gjs-pn-btn" data-command="core:preview">
+          <%= @page.language == 'fa' ? 'پیش‌نمایش' : 'Preview' %>
+        </button>
+        <button class="gjs-pn-btn" data-command="core:fullscreen">
+          <%= @page.language == 'fa' ? 'تمام صفحه' : 'Fullscreen' %>
+        </button>
+        <button class="gjs-pn-btn" data-command="core:undo">
+          <%= @page.language == 'fa' ? 'بازگشت' : 'Undo' %>
+        </button>
+        <button class="gjs-pn-btn" data-command="core:redo">
+          <%= @page.language == 'fa' ? 'تکرار' : 'Redo' %>
+        </button>
+      </div>
+      
+      <div class="toolbar-center">
+        <div class="gjs-pn-devices-c"></div>
+      </div>
+      
+      <div class="toolbar-right">
+        <%= form_with model: [@page], url: page_builder_page_path(@page), method: :patch, local: false, id: "page-form", class: "d-inline" do |f| %>
+          <%= f.hidden_field :content %>
+          <%= f.hidden_field :css %>
+          <button type="button" class="btn btn-success" id="save-page">
+            <%= @page.language == 'fa' ? 'ذخیره' : 'Save' %>
+          </button>
+        <% end %>
+        
+        <%= link_to page_builder_pages_path, class: "btn btn-secondary ml-2" do %>
+          <%= @page.language == 'fa' ? 'بازگشت' : 'Back' %>
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="page-builder-canvas">
+      <%= page_builder_editor(
+        id: 'gjs',
+        language: @page.language,
+        rtl: @page.rtl?,
+        urlStore: page_builder_page_path(@page),
+        urlLoad: page_builder_page_path(@page, format: :json)
+      ) %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const editor = RailsPageBuilder.editors['gjs'];
+  
+  if (editor) {
+    // Load existing content
+    <% if @page.content.present? %>
+      editor.setComponents('<%= j @page.content %>');
+    <% end %>
+    
+    <% if @page.css.present? %>
+      editor.setStyle('<%= j @page.css %>');
+    <% end %>
+    
+    // Save functionality
+    document.getElementById('save-page').addEventListener('click', function() {
+      const form = document.getElementById('page-form');
+      const contentField = form.querySelector('input[name="page[content]"]');
+      const cssField = form.querySelector('input[name="page[css]"]');
+      
+      contentField.value = editor.getHtml();
+      cssField.value = editor.getCss();
+      
+      fetch(form.action, {
+        method: 'PATCH',
+        body: new FormData(form),
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.id) {
+          alert('<%= @page.language == 'fa' ? 'صفحه با موفقیت ذخیره شد' : 'Page saved successfully' %>');
+        } else {
+          alert('<%= @page.language == 'fa' ? 'خطا در ذخیره صفحه' : 'Error saving page' %>');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('<%= @page.language == 'fa' ? 'خطا در ذخیره صفحه' : 'Error saving page' %>');
+      });
+    });
+    
+    // Panel switching
+    document.querySelectorAll('.panel__switcher button').forEach(button => {
+      button.addEventListener('click', function() {
+        document.querySelectorAll('.panel__switcher button').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const containers = ['.blocks-container', '.layers-container', '.styles-container', '.traits-container'];
+        containers.forEach(selector => {
+          const container = document.querySelector(selector);
+          if (container) container.classList.remove('active');
+        });
+        
+        const targetId = this.id.replace('show-', '') + '-container';
+        const targetContainer = document.querySelector('.' + targetId);
+        if (targetContainer) targetContainer.classList.add('active');
+      });
+    });
+  }
+});
+</script>
